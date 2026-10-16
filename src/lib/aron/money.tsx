@@ -6,10 +6,20 @@ type PriceProps = {
   className?: string;
 };
 
-export function formatAmount(amount: number, locale: Locale): string {
-  return new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en", {
+const formatters = new Map<Locale, Intl.NumberFormat>();
+
+function formatter(locale: Locale): Intl.NumberFormat {
+  const cached = formatters.get(locale);
+  if (cached) return cached;
+  const next = new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en", {
     maximumFractionDigits: 0,
-  }).format(amount);
+  });
+  formatters.set(locale, next);
+  return next;
+}
+
+export function formatAmount(amount: number, locale: Locale): string {
+  return formatter(locale).format(amount);
 }
 
 /** Official SAMA mark (U+20C1). Drawn so it shows even when the font has no glyph. */

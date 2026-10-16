@@ -17,9 +17,28 @@ export const Route = createRootRoute({
       { name: "description", content: DESCRIPTION },
       { name: "author", content: "Ahmed Al-Omrani" },
       { name: "theme-color", content: "#1e3a32" },
+      { property: "og:title", content: "زهور أرون | تنسيق الزهور في بريدة" },
+      { property: "og:description", content: DESCRIPTION },
+      { property: "og:image", content: "/og.jpg" },
+      { property: "og:type", content: "website" },
+      { property: "og:locale", content: "ar_SA" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "زهور أرون" },
+      { name: "twitter:description", content: DESCRIPTION },
+      { name: "twitter:image", content: "/og.jpg" },
+      ...(import.meta.env.PROD
+        ? [
+            {
+              httpEquiv: "Content-Security-Policy",
+              content:
+                "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'",
+            },
+          ]
+        : []),
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "sitemap", href: "/sitemap.xml" },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },

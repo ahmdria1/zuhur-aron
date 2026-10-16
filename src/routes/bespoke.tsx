@@ -1,11 +1,13 @@
 import { useState, type FormEvent } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { fieldClass } from "@/lib/aron/labels";
 import { useLocale } from "@/lib/aron/locale";
-import { makeOrderId, todayInRiyadh } from "@/lib/aron/quote";
-import { saveReceipt, type Receipt } from "@/lib/aron/receipts";
+import { recordBespoke } from "@/lib/aron/orders-api";
+import { todayInRiyadh } from "@/lib/aron/quote";
+import { saveReceipt } from "@/lib/aron/receipts";
 import { parseBespoke } from "@/lib/aron/schema";
 
-const field = "mt-1 h-12 w-full border border-ink/15 bg-foam px-3";
+const field = `${fieldClass} mt-1`;
 
 export const Route = createFileRoute("/bespoke")({
   head: () => ({
@@ -30,37 +32,26 @@ function BespokePage() {
   const [date, setDate] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
 
-  function onSubmit(event: FormEvent) {
+  async function onSubmit(event: FormEvent) {
     event.preventDefault();
     const parsed = parseBespoke({ recipient, phone, occasion, budget, date, notes }, todayInRiyadh());
     if (!parsed.ok) {
       setError(parsed.error === "phone" ? t("phoneError") : parsed.error === "date" ? t("dateError") : t("formError"));
       return;
     }
-    const id = makeOrderId();
-    const receipt: Receipt = {
-      id,
-      kind: "bespoke",
-      createdAt: new Date().toISOString(),
-      total: parsed.data.budget,
-      recipient: parsed.data.recipient,
-      phone: parsed.data.phone,
-      date: parsed.data.date,
-      message: parsed.data.notes,
-      lines: [
-        {
-          slug: "bespoke",
-          nameAr: `تنسيق خاص — ${parsed.data.occasion}`,
-          nameEn: `Custom — ${parsed.data.occasion}`,
-          qty: 1,
-          total: parsed.data.budget,
-        },
-      ],
-      stored: "device",
-    };
-    saveReceipt(receipt);
-    void navigate({ to: "/order/$id", params: { id } });
+    setPending(true);
+    try {
+      const receipt = await recordBespoke({ data: parsed.data });
+      saveReceipt(receipt);
+      await navigate({ to: "/order/$id", params: { id: receipt.id } });
+    } catch (caught) {
+      const messageText = caught instanceof Error ? caught.message : "";
+      setError(messageText.includes("rate") ? t("rateError") : t("formError"));
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
@@ -81,7 +72,7 @@ function BespokePage() {
       </div>
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <label className="block text-sm">
-          {t("name")}
+          {t("fieldRecipient")}
           <input className={field} value={recipient} onChange={(e) => setRecipient(e.target.value)} required />
         </label>
         <label className="block text-sm">
@@ -103,6 +94,7 @@ function BespokePage() {
             onChange={(e) => setBudget(Number(e.target.value))}
             required
           />
+          <span className="mt-1 block text-ink/55">{t("minBudget")}</span>
         </label>
         <label className="block text-sm">
           {t("date")}
@@ -122,8 +114,8 @@ function BespokePage() {
             {error}
           </p>
         ) : null}
-        <button type="submit" className="h-12 bg-leaf px-6 text-sm font-medium text-paper">
-          {t("bespokeSubmit")}
+        <button type="submit" disabled={pending} className="h-12 bg-leaf px-6 text-sm font-medium text-paper disabled:opacity-60">
+          {pending ? t("working") : t("bespokeSubmit")}
         </button>
       </form>
     </div>

@@ -1,18 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import type { CopyKey } from "@/lib/aron/copy";
+import { CITY_KEY } from "@/lib/aron/labels";
 import { useLocale } from "@/lib/aron/locale";
 import { Price } from "@/lib/aron/money";
 import { lineTitle, useReceipts, useReceiptsHydrated } from "@/lib/aron/receipts";
-import type { CityId } from "@/lib/aron/quote";
-
-const CITY_KEY: Record<CityId, CopyKey> = {
-  buraidah: "cityBuraidah",
-  unaizah: "cityUnaizah",
-  rass: "cityRass",
-  riyadh: "cityRiyadh",
-  jeddah: "cityJeddah",
-  dammam: "cityDammam",
-};
 
 export const Route = createFileRoute("/order/$id")({
   head: () => ({

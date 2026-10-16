@@ -1,35 +1,16 @@
 import { useState, type FormEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { clearCart, useCartLines } from "@/lib/aron/cart";
-import type { CopyKey } from "@/lib/aron/copy";
+import { CITY_KEY, fieldClass } from "@/lib/aron/labels";
 import { useLocale } from "@/lib/aron/locale";
 import { Price } from "@/lib/aron/money";
-import { placeOrder } from "@/lib/aron/orders-api";
-import { buildCatalogReceipt, saveReceipt } from "@/lib/aron/receipts";
-import {
-  CITIES,
-  lineKey,
-  makeOrderId,
-  orderTotal,
-  priceLines,
-  todayInRiyadh,
-  type CityId,
-  type PaymentId,
-  type SlotId,
-} from "@/lib/aron/quote";
+import { placeOrder, recordGuestOrder } from "@/lib/aron/orders-api";
+import { saveReceipt } from "@/lib/aron/receipts";
+import { CITIES, lineKey, orderTotal, priceLines, todayInRiyadh, type CityId, type PaymentId, type SlotId } from "@/lib/aron/quote";
 import { parseCheckout } from "@/lib/aron/schema";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
-const field = "mt-1 h-12 w-full border border-ink/15 bg-foam px-3 text-base";
-
-const CITY_KEY: Record<CityId, CopyKey> = {
-  buraidah: "cityBuraidah",
-  unaizah: "cityUnaizah",
-  rass: "cityRass",
-  riyadh: "cityRiyadh",
-  jeddah: "cityJeddah",
-  dammam: "cityDammam",
-};
+const field = `${fieldClass} mt-1`;
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -71,11 +52,11 @@ function CheckoutPage() {
     );
   }
 
-  const total = orderTotal(priced.subtotal, city);
+  const ready = priced;
+  const total = orderTotal(ready.subtotal, city);
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
-    if (!priced) return;
     setError(null);
     const payload = {
       recipient,
@@ -88,7 +69,7 @@ function CheckoutPage() {
       message,
       sender,
       payment,
-      lines: priced.lines.map((line) => ({
+      lines: ready.lines.map((line) => ({
         slug: line.slug,
         size: line.size,
         addons: line.addons,
@@ -102,26 +83,15 @@ function CheckoutPage() {
     }
     setPending(true);
     try {
-      let id = "";
-      if (user) {
-        const receipt = await placeOrder({ data: parsed.data });
-        saveReceipt(receipt);
-        id = receipt.id;
-      } else {
-        id = makeOrderId();
-        const receipt = buildCatalogReceipt(id, parsed.data, "device");
-        if (!receipt) {
-          setError(t("catalogError"));
-          return;
-        }
-        saveReceipt(receipt);
-      }
+      const receipt = user ? await placeOrder({ data: parsed.data }) : await recordGuestOrder({ data: parsed.data });
+      saveReceipt(receipt);
       clearCart();
-      await navigate({ to: "/order/$id", params: { id } });
+      await navigate({ to: "/order/$id", params: { id: receipt.id } });
     } catch (caught) {
       const messageText = caught instanceof Error ? caught.message : "";
       if (messageText.includes("catalog")) setError(t("catalogError"));
       else if (messageText.includes("phone")) setError(t("phoneError"));
+      else if (messageText.includes("rate")) setError(t("rateError"));
       else setError(t("formError"));
     } finally {
       setPending(false);
@@ -151,6 +121,7 @@ function CheckoutPage() {
                 </option>
               ))}
             </select>
+            {CITIES[city].sameDay ? <span className="mt-1 block text-ink/60">{t("sameDay")}</span> : null}
           </label>
           <label className="text-sm">
             {t("district")}

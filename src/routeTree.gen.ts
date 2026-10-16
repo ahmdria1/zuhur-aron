@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as BespokeRouteImport } from './routes/bespoke'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as DeskRouteImport } from './routes/desk'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as OrderIdRouteImport } from './routes/order.$id'
@@ -43,6 +44,11 @@ const BespokeRoute = BespokeRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeskRoute = DeskRouteImport.update({
+  id: '/desk',
+  path: '/desk',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -77,6 +83,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/bespoke': typeof BespokeRoute
   '/checkout': typeof CheckoutRoute
+  '/desk': typeof DeskRoute
   '/login': typeof LoginRoute
   '/shop': typeof ShopRoute
   '/order/$id': typeof OrderIdRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/bespoke': typeof BespokeRoute
   '/checkout': typeof CheckoutRoute
+  '/desk': typeof DeskRoute
   '/login': typeof LoginRoute
   '/shop': typeof ShopRoute
   '/order/$id': typeof OrderIdRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/bespoke': typeof BespokeRoute
   '/checkout': typeof CheckoutRoute
+  '/desk': typeof DeskRoute
   '/login': typeof LoginRoute
   '/shop': typeof ShopRoute
   '/order/$id': typeof OrderIdRoute
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/bespoke'
     | '/checkout'
+    | '/desk'
     | '/login'
     | '/shop'
     | '/order/$id'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/bespoke'
     | '/checkout'
+    | '/desk'
     | '/login'
     | '/shop'
     | '/order/$id'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/bespoke'
     | '/checkout'
+    | '/desk'
     | '/login'
     | '/shop'
     | '/order/$id'
@@ -153,6 +165,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   BespokeRoute: typeof BespokeRoute
   CheckoutRoute: typeof CheckoutRoute
+  DeskRoute: typeof DeskRoute
   LoginRoute: typeof LoginRoute
   ShopRoute: typeof ShopRoute
   OrderIdRoute: typeof OrderIdRoute
@@ -195,6 +208,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/desk': {
+      id: '/desk'
+      path: '/desk'
+      fullPath: '/desk'
+      preLoaderRoute: typeof DeskRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -241,6 +261,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   BespokeRoute: BespokeRoute,
   CheckoutRoute: CheckoutRoute,
+  DeskRoute: DeskRoute,
   LoginRoute: LoginRoute,
   ShopRoute: ShopRoute,
   OrderIdRoute: OrderIdRoute,

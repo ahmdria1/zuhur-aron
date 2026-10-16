@@ -67,8 +67,7 @@ export function parseCheckout(
   const phone = normalizeSaudiMobile(parsed.data.phone);
   if (!phone) return { ok: false, error: "phone" };
   if (!deliveryDateOk(parsed.data.date, today, parsed.data.city)) return { ok: false, error: "date" };
-  const message = parsed.data.message.replace(/[<>]/g, "");
-  return { ok: true, data: { ...parsed.data, phone, message } };
+  return { ok: true, data: { ...parsed.data, phone } };
 }
 
 export const bespokeSchema = z.object({
@@ -91,8 +90,5 @@ export function parseBespoke(
   const phone = normalizeSaudiMobile(parsed.data.phone);
   if (!phone) return { ok: false, error: "phone" };
   if (!deliveryDateOk(parsed.data.date, today)) return { ok: false, error: "date" };
-  return {
-    ok: true,
-    data: { ...parsed.data, phone, notes: parsed.data.notes.replace(/[<>]/g, "") },
-  };
+  return { ok: true, data: { ...parsed.data, phone } };
 }

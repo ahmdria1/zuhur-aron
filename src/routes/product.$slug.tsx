@@ -2,22 +2,11 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getProduct, products } from "@/lib/aron/catalog";
 import { addLine, setCartOpen } from "@/lib/aron/cart";
-import type { CopyKey } from "@/lib/aron/copy";
+import { ADDON_KEY, SIZE_KEY } from "@/lib/aron/labels";
 import { useLocale } from "@/lib/aron/locale";
 import { Price } from "@/lib/aron/money";
 import { ADDONS, SIZES, unitPrice, type AddonId, type SizeId } from "@/lib/aron/quote";
 import { ProductCard } from "@/components/aron/product-card";
-
-const SIZE_KEY: Record<SizeId, CopyKey> = {
-  petite: "sizePetite",
-  classic: "sizeClassic",
-  grand: "sizeGrand",
-};
-const ADDON_KEY: Record<AddonId, CopyKey> = {
-  vase: "addonVase",
-  dates: "addonDates",
-  ribbon: "addonRibbon",
-};
 
 export const Route = createFileRoute("/product/$slug")({
   loader: ({ params }) => {
@@ -70,6 +59,25 @@ function ProductPage() {
 
   return (
     <article className="mx-auto grid max-w-6xl gap-10 px-4 py-10 md:grid-cols-2">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: product.name.ar,
+            description: product.summary.ar,
+            image: product.image,
+            brand: { "@type": "Brand", name: "زهور أرون" },
+            offers: {
+              "@type": "Offer",
+              priceCurrency: "SAR",
+              price: product.price,
+              availability: "https://schema.org/InStock",
+            },
+          }),
+        }}
+      />
       <img
         src={product.image}
         alt={product.name[locale]}

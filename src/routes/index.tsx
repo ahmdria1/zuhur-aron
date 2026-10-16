@@ -1,18 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { products, type Occasion } from "@/lib/aron/catalog";
+import { products } from "@/lib/aron/catalog";
 import type { CopyKey } from "@/lib/aron/copy";
+import { OCCASION_KEY, OCCASIONS } from "@/lib/aron/labels";
 import { useLocale } from "@/lib/aron/locale";
 import { ProductCard } from "@/components/aron/product-card";
-
-const OCCASIONS: { id: Occasion; key: CopyKey }[] = [
-  { id: "love", key: "occLove" },
-  { id: "thanks", key: "occThanks" },
-  { id: "newborn", key: "occNewborn" },
-  { id: "grad", key: "occGrad" },
-  { id: "wedding", key: "occWedding" },
-  { id: "sympathy", key: "occSympathy" },
-  { id: "apology", key: "occApology" },
-];
 
 const floristLd = {
   "@context": "https://schema.org",
@@ -109,14 +100,14 @@ function Home() {
         <div className="mx-auto max-w-6xl px-4 py-14">
           <h2 className="text-2xl font-medium">{t("occasionsTitle")}</h2>
           <ul className="mt-6 flex flex-wrap gap-2">
-            {OCCASIONS.map((item) => (
-              <li key={item.id}>
+            {OCCASIONS.map((id) => (
+              <li key={id}>
                 <Link
                   to="/shop"
-                  search={{ occasion: item.id }}
+                  search={{ occasion: id }}
                   className="inline-flex h-11 items-center border border-ink/15 px-4 text-sm hover:border-ink"
                 >
-                  {t(item.key)}
+                  {t(OCCASION_KEY[id])}
                 </Link>
               </li>
             ))}

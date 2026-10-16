@@ -2,19 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { products, type Category, type Occasion } from "@/lib/aron/catalog";
 import type { CopyKey } from "@/lib/aron/copy";
+import { OCCASION_KEY, OCCASIONS } from "@/lib/aron/labels";
 import { useLocale } from "@/lib/aron/locale";
 import { ProductCard } from "@/components/aron/product-card";
 
-const OCCASIONS = ["love", "thanks", "newborn", "grad", "wedding", "sympathy", "apology"] as const;
-const OCCASION_KEY: Record<Occasion, CopyKey> = {
-  love: "occLove",
-  thanks: "occThanks",
-  newborn: "occNewborn",
-  grad: "occGrad",
-  wedding: "occWedding",
-  sympathy: "occSympathy",
-  apology: "occApology",
-};
 const CATEGORIES: { id: "all" | Category; key: CopyKey }[] = [
   { id: "all", key: "filterAll" },
   { id: "bouquets", key: "catBouquets" },

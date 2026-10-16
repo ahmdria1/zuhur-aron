@@ -1,10 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { GROK_PROVIDERS, authClient, authEnabled, signIn } from "@/lib/auth/client";
+import { fieldClass } from "@/lib/aron/labels";
 import { useLocale } from "@/lib/aron/locale";
-
-const field =
-  "h-12 w-full border border-ink/15 bg-paper px-3 text-base text-ink outline-none";
 
 export function AuthPanel() {
   const { t } = useLocale();
@@ -78,13 +76,13 @@ export function AuthPanel() {
         {mode === "up" ? (
           <label className="block text-sm">
             {t("name")}
-            <input className={`${field} mt-1`} value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" required />
+            <input className={`${fieldClass} mt-1`} value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" required />
           </label>
         ) : null}
         <label className="block text-sm">
           {t("email")}
           <input
-            className={`${field} mt-1`}
+            className={`${fieldClass} mt-1`}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -95,7 +93,7 @@ export function AuthPanel() {
         <label className="block text-sm">
           {t("password")}
           <input
-            className={`${field} mt-1`}
+            className={`${fieldClass} mt-1`}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

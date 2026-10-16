@@ -8,16 +8,10 @@ import {
   useCartLines,
   useCartOpen,
 } from "@/lib/aron/cart";
-import type { CopyKey } from "@/lib/aron/copy";
 import { useLocale } from "@/lib/aron/locale";
+import { SIZE_KEY } from "@/lib/aron/labels";
 import { Price } from "@/lib/aron/money";
-import { lineKey, priceLines, type SizeId } from "@/lib/aron/quote";
-
-const SIZE_KEY: Record<SizeId, CopyKey> = {
-  petite: "sizePetite",
-  classic: "sizeClassic",
-  grand: "sizeGrand",
-};
+import { lineKey, priceLines } from "@/lib/aron/quote";
 
 export function CartDrawer() {
   const open = useCartOpen();

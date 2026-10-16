@@ -47,11 +47,12 @@ export function Shell({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const links = [
-    { to: "/shop" as const, label: t("navShop") },
-    { to: "/bespoke" as const, label: t("navBespoke") },
-    { to: "/about" as const, label: t("navStudio") },
-    { to: "/account" as const, label: t("navAccount") },
+  const links: { to: "/" | "/shop" | "/bespoke" | "/about" | "/account"; hash?: string; label: string }[] = [
+    { to: "/shop", label: t("navShop") },
+    { to: "/", hash: "occasions", label: t("navOccasions") },
+    { to: "/bespoke", label: t("navBespoke") },
+    { to: "/about", label: t("navStudio") },
+    { to: "/account", label: t("navAccount") },
   ];
 
   return (
@@ -66,9 +67,9 @@ export function Shell({ children }: { children: ReactNode }) {
             <span className="font-display text-sm tracking-[0.18em] text-leaf">ARON</span>
             <span className="text-base font-medium">{t("brand")}</span>
           </Link>
-          <nav className="hidden items-center gap-6 md:flex" aria-label={t("navShop")}>
+          <nav className="hidden items-center gap-4 md:flex" aria-label={t("navMain")}>
             {links.map((link) => (
-              <Link key={link.to} to={link.to} className="text-sm text-ink/80 hover:text-ink">
+              <Link key={`${link.to}-${link.hash ?? ""}`} to={link.to} hash={link.hash} className="text-sm text-ink/80 hover:text-ink">
                 {link.label}
               </Link>
             ))}
@@ -78,11 +79,12 @@ export function Shell({ children }: { children: ReactNode }) {
           </button>
           <button
             type="button"
-            className="relative grid h-11 w-11 place-items-center"
+            className="relative flex h-11 items-center gap-1 px-2"
             aria-label={t("openCart")}
             onClick={() => setCartOpen(true)}
           >
             <ShoppingBag className="size-5" />
+            <span className="hidden text-sm lg:inline">{t("cart")}</span>
             {count > 0 ? (
               <span className="absolute end-1 top-1 grid h-5 min-w-5 place-items-center bg-clay px-1 text-xs text-paper tabular-nums">
                 {count}
@@ -105,11 +107,12 @@ export function Shell({ children }: { children: ReactNode }) {
           <Dialog.Content className="fixed inset-y-0 start-0 z-50 w-72 bg-foam p-6 outline-none md:hidden">
             <Dialog.Title className="font-display tracking-[0.18em] text-leaf">ARON</Dialog.Title>
             <Dialog.Description className="sr-only">{t("menu")}</Dialog.Description>
-            <nav className="mt-8 flex flex-col gap-2">
+            <nav className="mt-8 flex flex-col gap-2" aria-label={t("navMain")}>
               {links.map((link) => (
                 <Link
-                  key={link.to}
+                  key={`${link.to}-${link.hash ?? ""}`}
                   to={link.to}
+                  hash={link.hash}
                   onClick={() => setMenu(false)}
                   className="flex h-12 items-center text-lg"
                 >
@@ -140,12 +143,16 @@ export function Shell({ children }: { children: ReactNode }) {
             <p className="mt-2">{t("footerHoursValue")}</p>
           </div>
           <div className="text-sm">
-            <nav className="flex flex-col gap-2">
+            <p className="text-paper/60">{t("footerShop")}</p>
+            <nav className="mt-2 flex flex-col gap-2" aria-label={t("footerShop")}>
               {links.map((link) => (
-                <Link key={link.to} to={link.to} className="text-paper/90 hover:text-paper">
+                <Link key={`${link.to}-${link.hash ?? ""}`} to={link.to} hash={link.hash} className="text-paper/90 hover:text-paper">
                   {link.label}
                 </Link>
               ))}
+              <Link to="/desk" className="text-paper/90 hover:text-paper">
+                {t("deskNav")}
+              </Link>
             </nav>
             <p className="mt-6 text-paper/70">{t("footerNote")}</p>
           </div>
